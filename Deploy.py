@@ -36,9 +36,9 @@ bytecode = compiled_sol["contracts"]["MyContract.sol"]["SimpleStorage"]["evm"]["
 abi = compiled_sol["contracts"]["MyContract.sol"]["SimpleStorage"]["abi"]
 
 # for connecting to gannache
-w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:7545"))
+w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
 chain_ID = 1337
-My_address = "0xa4CE4f27710Ed8c53CBC4FB4496c9c7F21BcFBe9"
+My_address = "0xdbaA27d4AbB7Eda81555C8648eBd25E6eB38AcD7"
 private_key = os.getenv("PRIVATE_KEY")
 
 # Create the contract in python 
@@ -57,4 +57,5 @@ transaction = MyContract.constructor().build_transaction({
     "nonce": nonce
 })
 signed_tnx = w3.eth.account.sign_transaction(transaction, private_key = private_key)
-print(signed_tnx)
+
+tx_hash = w3.eth.send_raw_transaction(signed_tnx.rawTransaction)
