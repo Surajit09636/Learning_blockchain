@@ -36,9 +36,9 @@ bytecode = compiled_sol["contracts"]["MyContract.sol"]["SimpleStorage"]["evm"]["
 abi = compiled_sol["contracts"]["MyContract.sol"]["SimpleStorage"]["abi"]
 
 # for connecting to gannache
-w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
+w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:7545"))
 chain_ID = 1337
-My_address = "0xdbaA27d4AbB7Eda81555C8648eBd25E6eB38AcD7"
+My_address = "0xbBaA1cCFAD466BfD0F94209E5C402277E9171F0d"
 private_key = os.getenv("PRIVATE_KEY")
 
 # Create the contract in python 
@@ -59,3 +59,21 @@ transaction = MyContract.constructor().build_transaction({
 signed_tnx = w3.eth.account.sign_transaction(transaction, private_key = private_key)
 
 tx_hash = w3.eth.send_raw_transaction(signed_tnx.rawTransaction)
+tx_reciept = w3.eth.wait_for_transaction_receipt(tx_hash)
+
+# working with contract
+# Contract ABI
+#Contract Address
+my_contract = w3.eth.contract(address=tx_reciept.contractAddress, abi=abi)
+print(my_contract.functions.retrive().call())
+
+store_transaction = my_contract.functions.store(15).build_transaction(
+    {"chainId": chain_ID, "from": My_address, "nonce": nonce + 1}
+)
+
+signed_store_transaction = w3.eth.account.sign_transaction(
+    store_transaction, private_key=private_key
+)
+
+send_store_tnx = w3.eth.send_raw_transaction(signed_store_transaction.rawTransaction)
+tx_reciept = w3.eth.wait_for_transaction_receipt(send_store_tnx)
